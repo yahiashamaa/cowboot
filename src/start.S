@@ -43,9 +43,9 @@ move	t0,	a2	# Our new base
 
 flush_dcache:
 	cache	0x01, 0(t0)
-	bne	t0, t1, flush_dcache
-	 addi	t0, 32	# CONFIG_SYS_CACHELINE_SIZE
-
+	addi	t0, t0, 32	# CONFIG_SYS_CACHELINE_SIZE
+	 blt	t0, t1, flush_dcache
+	  nop
 	sync
 
 /* flush i-cache */
@@ -53,15 +53,14 @@ move	t0, a2	# Our new base
 
 flush_icache:
 	cache	0x00, 0(t0)
-	bne	t0, t1, flush_icache
-	 addi	t0, 32	# CONFIG_SYS_CACHELINE_SIZE
-
+	addi	t0, t0, 32 # CONFIG_SYS_CACHELINE_SIZE
+	 blt	t0, t1, flush_icache
+	  nop
 
 
 	la  t9, main
 	addu t9, t6
 	jr   t9
- 	 move	a1, a2
-	
+	 nop	
 	
 	.end	relocate_code
