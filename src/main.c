@@ -39,6 +39,8 @@ void main(void)
 {   
     early_lcdc_init();
 
+    timer_init();
+
     // Boot menu
     clear_fb();
     cycle_menu(0, 30);
