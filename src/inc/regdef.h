@@ -35,5 +35,6 @@
 #define sp      $29
 #define fp      $30
 #define ra      $31
+#define CP0_CONFIG $16
 
 #endif

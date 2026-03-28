@@ -15,6 +15,17 @@ SECTIONS
     }
 
     . = ALIGN(4);
+
+    __bss_start = .;
+
+    .bss : {
+        *(.bss*)
+        *(COMMON)
+    }
+
+    __bss_end = .;
+
+    . = ALIGN(4);
 	__image_copy_end = .;
 
     /* This shit took me 30 mins to debug, why the fuck would 

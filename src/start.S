@@ -5,10 +5,9 @@
 	.globl _start
 	.text
 _start:
-	/* Set up temporary stack */
 	li	sp, 0x80400000
 
-	la  t9, early_init
+	la  t9, main
 	jr  t9
 	 nop
 
@@ -23,23 +22,21 @@ relocate_code:
 	move	t1, a2 		# destination (new textbase)
 	la  t2, __image_copy_end # end of source
 
-	sub t6, a2, t0 # relocation offset
-
-	
-# t0 = source address
-# t1 = target address
-# t2 = source end address
+	sub	t3, t2, t0		# length
+	add	t4, t1, t3		# dst end
+	sub	t5, a2, t0		# relocation offset
 
 copy:
-	lw	t3, 0(t0)
-	sw	t3, 0(t1)
+	lw	t6, 0(t0)
+	sw	t6, 0(t1)
 	addu	t0, 4
 	blt	t0, t2, copy
 	 addu	t1, 4
 
 
-#  flush caches and invalidate icache here
-move	t0,	a2	# Our new base
+	# flush dcache
+	li	t0, 0x80000000  		# start
+	li t1, 0x80000000 + 32768
 
 flush_dcache:
 	cache	0x01, 0(t0)
@@ -48,19 +45,38 @@ flush_dcache:
 	  nop
 	sync
 
-/* flush i-cache */
-move	t0, a2	# Our new base
+	# flush icache
+	li	t0, 0x80000000
+	
 
 flush_icache:
 	cache	0x00, 0(t0)
-	addi	t0, t0, 32 # CONFIG_SYS_CACHELINE_SIZE
-	 blt	t0, t1, flush_icache
-	  nop
+	addi	t0, t0, 32
+	blt	t0, t1, flush_icache
+	 nop
+
+	mfc0	t0, CP0_CONFIG, 7
+	nop
+	ori	t0, 2
+	mtc0	t0, CP0_CONFIG, 7
+	nop
 
 
-	la  t9, main
-	addu t9, t6
-	jr   t9
-	 nop	
-	
-	.end	relocate_code
+	# clear bss
+	la	t0, __bss_start
+	la	t1, __bss_end
+
+clear_bss:
+	sw	zero, 0(t0)
+	addi	t0, t0, 4
+	blt	t0, t1, clear_bss
+	 nop
+
+
+	# jump
+	la	t9, main
+	addu	t9, t5
+	jr	t9
+	 nop
+
+	.end relocate_code
