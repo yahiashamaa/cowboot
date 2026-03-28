@@ -9,6 +9,12 @@ static inline void writel(u32 val, u32 addr)
     asm volatile("sync" ::: "memory");
 }
 
+static inline void writew(u16 val, u32 addr)
+{
+    *(volatile u16 *)addr = val;
+    asm volatile("sync" ::: "memory");
+}
+
 static inline u32 readl(u32 addr)
 {
     u32 val = *(volatile u32 *)addr;
@@ -16,8 +22,14 @@ static inline u32 readl(u32 addr)
     return val;
 }
 
+static inline u16 readw(u32 addr)
+{
+    u16 val = *(volatile u16 *)addr;
+    asm volatile("sync" ::: "memory");
+    return val;
+}
+
 void *memset(void *s, int c, u32 n);
-void udelay(u32 us);
 void _machine_restart(void);
 void power_off(void);
 

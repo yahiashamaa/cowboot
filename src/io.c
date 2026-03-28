@@ -6,10 +6,3 @@ void *memset(void *s, int c, u32 n)
     while(n--) *p++ = (u8)c;
     return s;
 }
-
-// not accurate
-void udelay(u32 us)
-{
-    volatile u32 i = us * 500;
-    while(i--);
-}

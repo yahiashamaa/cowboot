@@ -50,11 +50,6 @@ void early_lcdc_init(void)
 {
     // Thankfully, we run as kernel. so bootloader (U-Boot) has already done some heavy lifting
     
-    // Copy U-Boot logo to our framebuffer
-    u32 *src = (u32 *)UBOOT_FB_VIRT;
-    u32 *dst = (u32 *)FB_VIRT;
-    for (int i = 0; i < (XRES * YRES); i++)
-        dst[i] = src[i];
     
     struct framedesc *desc = (struct framedesc *)DESC_VIRT;
 

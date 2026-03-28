@@ -2,6 +2,7 @@
 #include "inc/io.h"
 #include "inc/fb.h"
 #include "inc/gpio.h"
+#include "inc/timer.h"
 #include "inc/lcdc.h"
 #include "inc/bootmenu.h"
 

@@ -5,19 +5,6 @@
  */
 
 
-/* WDT/TCU */
-
-#define TCU_BASE     0x10002000
-#define WDT_TCSR    0xc
-#define TCU_TSCR    0x3c
-#define WDT_TCNT    0x8
-#define WDT_TDR     0x0
-#define WDT_TCER			0x4
-#define TCER_TCEN BIT(0)
-#define TCSR_PRESCALE (3 << 3)
-#define TSCR_WDTSC BIT(16)
-#define TCSR_RTC_EN BIT(1)
-
 /* GPIO */
 
 #define	GPIO_BASE	0xb0010000
