@@ -1,5 +1,6 @@
 #include "inc/regs.h"
 #include "inc/io.h"
+#include "inc/timer.h"
 #include "inc/gpio.h"
 #include "inc/fb.h"
 #include "inc/bootmenu.h"
@@ -75,7 +76,7 @@ void cycle_menu(int selection, int key_gpio)
         {
             was_pressed = 1;
             held++;
-            udelay(5000);
+            udelay(10000);
             if (held == 30)
             {  
                 switch (selection) {
