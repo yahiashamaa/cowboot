@@ -2,20 +2,23 @@
 It is a simple secondary bootloader that runs on the Ingenic M200 SoC after U-Boot.
 
 ## What does it do?
-Currently, it can:
-  - set up and write to framebuffer from the semi-working state handed to us by the primary bootloader
-  - trigger a watchdog "reset".
-  - read gpio values
-  - display a simple boot menu
-  - jump back to the primary bootloader
-  
+The only supported device for now is the Amazfit Verge (`qogir`).
+Currently, `cowboot` can:
+- write to the framebuffer, display a boot menu
+- reset and poweroff of the device
+- boot an appended downstream boot.img
 
-## How to use?
-To compile, use: 
+## How to build?
+To compile **normally**, use: 
 ```
 make all
 ```
-which will produce `cowboot.img` that can be booted on the device.
+which will produce the bootable `cowboot.img`.
+
+(UNTESTED) To compile with the support of booting an appended `downstream.img`, use:
+```
+make all APPEND=1
+```
 
 To clean, use
 ```

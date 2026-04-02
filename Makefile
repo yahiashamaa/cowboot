@@ -1,10 +1,21 @@
 CFILES = $(wildcard src/*.c)
 OFILES = $(CFILES:.c=.o)
-GCCFLAGS = -Wall -O2 -ffreestanding -nostdinc -nostdlib -mno-abicalls -fno-pic -march=mips32r2
-
+GCCFLAGS = -Wall -O2 -ffreestanding -nostdlib -mno-abicalls -fno-pic -march=mips32r2
 
 all: clean main.bin
 
+ifneq ($(APPEND),)
+$(info appended downstream boot)
+
+ifeq ($(wildcard downstream.img),)
+$(error downstream.img not found)
+endif
+
+GCCFLAGS += -DDOWNSTREAM_BOOT
+
+else
+$(info no appended downstream boot)
+endif
 
 src/start.o: src/start.S
 	mipsel-linux-gnu-gcc $(GCCFLAGS) -c src/start.S -o src/start.o
@@ -25,4 +36,4 @@ main.bin: src/start.o $(OFILES)
 	--cmdline "" --output cowboot.img
 
 clean:
-	/bin/rm main.elf *.o *.bin *.img > /dev/null 2> /dev/null || true
+	/bin/rm main.elf src/*.o *.bin cowboot.img > /dev/null 2> /dev/null || true

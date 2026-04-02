@@ -80,3 +80,17 @@ clear_bss:
 	 nop
 
 	.end relocate_code
+
+#ifdef DOWNSTREAM_BOOT
+.section .data
+.align 4
+.globl downstream_start
+.globl downstream_end
+.global downstream_size
+
+downstream_start:
+    .incbin "downstream.img"
+downstream_end:
+downstream_size:
+    .word (downstream_end - downstream_start)
+#endif

@@ -6,8 +6,11 @@
 #include "inc/bootmenu.h"
 
 const char *bootoptions[] = {
-    "Jump to JZ U-Boot",
+    #ifdef DOWNSTREAM_BOOT
+    "Downstream boot",
+    #endif
     "Reset",
+    "Reset (U-Boot recovery)",
     "Power Off",
 };
 
@@ -78,24 +81,38 @@ void cycle_menu(int selection, int key_gpio)
             held++;
             udelay(10000);
             if (held == 30)
-            {  
+            { 
+            #ifdef DOWNSTREAM_BOOT
                 switch (selection) {
-                    case 0:
-                        framebuffer_test();
-                        draw_logo(60, 0xFF00FF00);
-                        draw_menu(0);
+                    case 0: // downstream boot
+                        downstream_boot();
                         break;
-                    case 1:
-                        (*uboot)();
+                    case 1: // reset
+                        _machine_restart(0, 0);
                         break;
-                    case 2: 
-                        _machine_restart();
+                    case 2: // reset u-boot recovery
+                        recovery_boot();
                         break;
-                    case 3:
-                        power_off();
+                    case 3: // poweroff
+                        _machine_restart(1, 0);
                         break;
                 }
             }
+
+            #else
+                switch (selection) {
+                    case 0: // reset
+                        _machine_restart(0, 0);
+                        break;
+                    case 1: // reset u-boot recovery
+                        recovery_boot();
+                        break;
+                    case 2: // poweroff
+                        _machine_restart(1, 0);
+                        break;
+                }
+        }
+            #endif
         } 
         else
         {
