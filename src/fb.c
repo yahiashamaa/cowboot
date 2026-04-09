@@ -1,7 +1,11 @@
 #include "inc/regs.h"
 #include "inc/io.h"
+#include "inc/timer.h"
 #include "inc/font.h"
 #include "inc/fb.h"
+
+int cur_x = 50;
+int cur_y = 50;
 
 void clear_fb(void)
 {
