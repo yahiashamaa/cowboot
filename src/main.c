@@ -3,6 +3,7 @@
 #include "inc/fb.h"
 #include "inc/gpio.h"
 #include "inc/timer.h"
+#include "inc/console.h"
 #include "inc/lcdc.h"
 #include "inc/bootmenu.h"
 
@@ -56,7 +57,7 @@ void early_init(void)
 
     // We can draw logo here on top of the uboot logo
     draw_logo(245, 0xFF00FF00);
-    relocate_code(0x80400000, 0, 0x80500000);
+    relocate_code(0x80000000, 0, 0x80000000);
 
     // What the fuck are you doing here????
     while(1);
