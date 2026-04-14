@@ -1,6 +1,6 @@
 CFILES = $(wildcard src/*.c)
 OFILES = $(CFILES:.c=.o)
-GCCFLAGS = -Wall -O2 -ffreestanding -nostdlib -mno-abicalls -fno-pic -march=mips32r2
+GCCFLAGS = -Wall -O2 -ffreestanding -nostdlib -fpic -mabicalls -G0 -march=mips32r2
 
 all: clean main.bin
 
