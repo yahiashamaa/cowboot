@@ -115,3 +115,12 @@ void framebuffer_test(void)
     /* Clear the framebuffer incase we want to write to it later */
     clear_fb();
 }
+
+void copy_uboot_logo(void)
+{
+    // Copy U-Boot logo to our framebuffer
+    u32 *src = (u32 *)UBOOT_FB_VIRT;
+    u32 *dst = (u32 *)FB_VIRT;
+    for (int i = 0; i < (XRES * YRES); i++)
+        dst[i] = src[i];
+}
