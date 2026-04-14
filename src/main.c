@@ -21,10 +21,6 @@
 #include "inc/jz_bootimg.h"
 
 #define WDT_TDR_TIME           32768 / 64 * 4 / 1000
-/* jz downstream boot.img */
-#define CONFIG_KERNEL_ENTRY    0x80f00000
-#define CONFIG_PARAM_BASE      0x80000800
-#define CONFIG_RAMDISK_DST     0x81a00000
 
 void _machine_restart(int poweroff, unsigned int signature)
 {
@@ -34,9 +30,9 @@ void _machine_restart(int poweroff, unsigned int signature)
         writel(0x5a5a, CPM_BASE + CPM_CPSPPR);
         /* 0 signature = normal, 1 = recovery*/
         if (signature != 0)
-            writel(RECOVERY_SIGNATURE, CPM_BASE + CPM_CPSPPR);
+            writel(RECOVERY_SIGNATURE, CPM_BASE + CPM_CPPSR);
         else 
-            writel(REBOOT_SIGNATURE, CPM_BASE + CPM_CPSPPR);
+            writel(REBOOT_SIGNATURE, CPM_BASE + CPM_CPPSR);
 
         writel(0, CPM_BASE + CPM_CPSPPR);
     }
@@ -56,8 +52,10 @@ void early_init(void)
     early_lcdc_init();
 
     // We can draw logo here on top of the uboot logo
-    draw_logo(245, 0xFF00FF00);
-    relocate_code(0x80000000, 0, 0x80000000);
+    copy_uboot_logo();
+    draw_logo(240, 0xFF00FF00);
+
+    relocate_code(0x8FFFF000, 0, 0x8F000000);
 
     // What the fuck are you doing here????
     while(1);
@@ -81,40 +79,3 @@ void recovery_boot(void)
 {
     _machine_restart(0, 1);
 }
-
-#ifdef DOWNSTREAM_BOOT
-extern char downstream_start[];
-extern char downstream_end[];
-
-void downstream_boot(void)
-{
-    struct jz_boot_img_hdr *hdr = (struct jz_boot_img_hdr *)downstream_start;
-    unsigned long *params = (unsigned long*)CONFIG_PARAM_BASE;
-	char *cmd_dst = (char *)CONFIG_PARAM_BASE + 32;
-    int page_sz, kernel_actual;
-
-    /* check for ANDROID! magic */
-    if (memcmp(hdr->magic, BOOT_MAGIC, BOOT_MAGIC_SIZE))
-        while (1);
-
-    page_sz = hdr->page_size;
-    kernel_actual = (hdr->kernel_size + page_sz -1 ) & ~(page_sz -1);
-    memcpy((void*)CONFIG_KERNEL_ENTRY, (char*)downstream_start + page_sz, hdr->kernel_size);
-    #if 0
-    if (hdr->ramdisk_size > 0) {
-        memcpy((void*)CONFIG_RAMDISK_DST, 
-        (char*)downstream_start + page_sz + kernel_actual, hdr->ramdisk_size);
-    }
-    #endif
-
-    memset(params, 0, 128);
-    params[0] = 0;
-    params[5] = (unsigned long)cmd_dst;
-    params[6] = (unsigned long)downstream_start;
-    sprintf(cmd_dst, "%s rd_start=0x%x rd_size=0x%x", 
-        (char*)hdr->cmdline, CONFIG_RAMDISK_DST, hdr->ramdisk_size);
-
-    flush_cache_all();
-    ((void (*)(int, char**, char *))CONFIG_KERNEL_ENTRY)(2, (char **)(params + 4), (char *)params);
-}
-#endif

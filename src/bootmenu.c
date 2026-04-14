@@ -3,14 +3,17 @@
 #include "inc/timer.h"
 #include "inc/gpio.h"
 #include "inc/fb.h"
+#include "inc/jz_bootimg.h"
 #include "inc/bootmenu.h"
 
 const char *bootoptions[] = {
     #ifdef DOWNSTREAM_BOOT
-    "Downstream boot",
+    "Boot embedded image",
     #endif
+    "Continue boot",
+    "Boot from recovery",
     "Reset",
-    "Reset (U-Boot recovery)",
+    "Reset to recovery",
     "Power Off",
 };
 
@@ -66,11 +69,22 @@ void draw_logo(int y, u32 color)
 // TODO: move to a boot.c and actually implement mmc boot
 void (*uboot)(void)= (void (*)(void))0x80100000;
 
+#ifdef DOWNSTREAM_BOOT
+extern char downstream_start[];
+extern char downstream_end[];
+#endif
+
 // TODO: add more events other than key press
 void cycle_menu(int selection, int key_gpio)
 {
     draw_logo(60, 0xFF00FF00);
     draw_menu(selection);
+    u8 *bootimg;
+    const char *cmdline =
+    "console=ttyS3,115200n8 mem=245M@0x0 mem=255M@0x30000000 ip=off "
+    "root=/dev/ram0 rw rdinit=/init rd_start=0x81A00000 rd_size=0x00166F09 "
+    "androidboot.revision=00000000 androidboot.fastboot_unlock=1 "
+    "androidboot.battery_type=1";
     int held = 0;
     int was_pressed = 0;
 
@@ -85,15 +99,23 @@ void cycle_menu(int selection, int key_gpio)
             #ifdef DOWNSTREAM_BOOT
                 switch (selection) {
                     case 0: // downstream boot
-                        downstream_boot();
+                        boot_jz_image((u8 *)downstream_start, cmdline);
                         break;
-                    case 1: // reset
+                    case 1: // continue boot
+                        bootimg = mmc_load_bootimg(90112);
+                        boot_jz_image(bootimg, cmdline);
+                        break;
+                    case 2: // boot from recovery partition
+                        bootimg = mmc_load_bootimg(24576);
+                        boot_jz_image(bootimg, cmdline);
+                        break;
+                    case 3: // reset
                         _machine_restart(0, 0);
                         break;
-                    case 2: // reset u-boot recovery
+                    case 4: // reset u-boot recovery
                         recovery_boot();
                         break;
-                    case 3: // poweroff
+                    case 5: // poweroff
                         _machine_restart(1, 0);
                         break;
                 }
@@ -101,13 +123,21 @@ void cycle_menu(int selection, int key_gpio)
 
             #else
                 switch (selection) {
-                    case 0: // reset
+                    case 0: // continue boot
+                        bootimg = mmc_load_bootimg(90112);
+                        boot_jz_image(bootimg, cmdline);
+                        break;
+                    case 1: // boot from recovery partition
+                        bootimg = mmc_load_bootimg(24576);
+                        boot_jz_image(bootimg, cmdline);
+                        break;
+                    case 2: // reset
                         _machine_restart(0, 0);
                         break;
-                    case 1: // reset u-boot recovery
+                    case 3: // reset u-boot recovery
                         recovery_boot();
                         break;
-                    case 2: // poweroff
+                    case 4: // poweroff
                         _machine_restart(1, 0);
                         break;
                 }

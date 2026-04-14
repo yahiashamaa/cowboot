@@ -6,8 +6,9 @@
 #define BOOT_NAME_SIZE 16
 #define BOOT_ARGS_SIZE 512
 
-#define CONFIG_PARAM_BASE                      0x80000800 /* The base address of parameters*/
-#define CONFIG_RAMDISK_DST                      0x81a00000          /* initrd address */
+#define PARAM_BASE      0x80001000 /* The base address of parameters*/
+#define KERNEL_ADDR     0x80F00000 /* initrd address */
+#define RAMDISK_ADDR    0x81A00000 /* initrd address */
 
 struct jz_boot_img_hdr {
     unsigned char magic[BOOT_MAGIC_SIZE];
@@ -62,5 +63,8 @@ struct jz_boot_img_hdr {
 ** 6. if second_size != 0: jump to second_addr
 **    else: jump to kernel_addr
 */
+
+void boot_jz_image(u8 *bootimg, const char *cmd);
+u8 *mmc_load_bootimg(u32 lba);
 
 #endif
