@@ -78,3 +78,11 @@ int sprintf(char *buf, const char *fmt, ...)
 	va_end(args);
 	return i;
 }
+
+u32 strlen(const char * s) {
+    const char *sc;
+
+    for (sc = s; *sc != '\0'; ++sc)
+        /* nothing hehe */;
+    return sc - s;
+}
