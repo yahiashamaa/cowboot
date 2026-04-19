@@ -1,8 +1,10 @@
-#include "inc/regs.h"
-#include "inc/io.h"
-#include "inc/timer.h"
-#include "inc/font.h"
-#include "inc/fb.h"
+#include "common/io.h"
+#include "drivers/timer.h"
+#include "drivers/lcdc.h"
+#include "common/font.h"
+#include "common/fb.h"
+#include "config/config.h"
+
 
 int cur_x = 50;
 int cur_y = 50;

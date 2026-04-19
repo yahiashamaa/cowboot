@@ -34,9 +34,22 @@
 #define TCSR_PRESCALE (3 << 3)
 #define TSCR_WDTSC BIT(16)
 #define TCSR_RTC_EN BIT(1)
+#define WDT_TDR_TIME           32768 / 64 * 4 / 1000
+
+
+#define REBOOT_SIGNATURE	0x003535
+#define RECOVERY_SIGNATURE	0x001a1a
+
+/* CPM */
+#define CPM_CPSPPR	0x38
+#define CPM_CPPSR	0x34
+#define	CPM_BASE	0x10000000
 
 void reset_timer(void);
 int timer_init(void);
+
 void udelay(unsigned long usec);
+
+void _machine_restart(int poweroff, unsigned int signature);
 
 #endif

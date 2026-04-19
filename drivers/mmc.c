@@ -1,9 +1,8 @@
-#include "inc/types.h"
-#include "inc/io.h"
-#include "inc/timer.h"
-#include "inc/mmc.h"
-#include "inc/regs.h"
-#include "inc/console.h"
+#include "common/types.h"
+#include "common/io.h"
+#include "drivers/timer.h"
+#include "drivers/mmc.h"
+#include "common/console.h"
 
 static int mmc_poll_status(u32 status) {
     u32 timeout = 50 * 1000 * 1000; // 50 seconds

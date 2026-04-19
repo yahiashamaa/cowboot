@@ -1,6 +1,6 @@
-#include "inc/types.h"
-#include "inc/io.h"
-#include "inc/fb.h"
+#include "common/types.h"
+#include "common/io.h"
+#include "common/fb.h"
 
 // TODO: add support for format specifiers :<
 

@@ -1,5 +1,5 @@
-#include "inc/io.h"
-#include "inc/nanoprintf.h"
+#include "common/io.h"
+#include "common/nanoprintf.h"
 
 void *memset(void *s, int c, u32 n)
 {

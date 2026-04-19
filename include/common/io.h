@@ -2,7 +2,7 @@
 #define IO_H
 
 #include <stdarg.h>
-#include "types.h"
+#include "common/types.h"
 
 #define KUSEG			0x00000000
 #define KSEG0			0x80000000

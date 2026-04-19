@@ -1,8 +1,12 @@
-CFILES = $(wildcard src/*.c)
-OFILES = $(CFILES:.c=.o)
-GCCFLAGS = -Wall -O2 -ffreestanding -nostdlib -fpic -mabicalls -G0 -march=mips32r2
+GCCFLAGS = -Wall -O2 -ffreestanding -fpic -mabicalls -pie -mxgot -G0 -march=mips32r2
 
 all: clean main.bin
+
+BOARD ?= qogir
+
+ifeq ($(BOARD),)
+$(error No board specified)
+endif
 
 ifneq ($(APPEND),)
 $(info appended downstream boot)
@@ -17,17 +21,26 @@ else
 $(info no appended downstream boot)
 endif
 
-src/start.o: src/start.S
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -c src/start.S -o src/start.o
+
+CFILES = \
+    $(wildcard common/*.c) \
+    $(wildcard drivers/*.c) \
+    $(wildcard board/$(BOARD)/*.c)
+GCCFLAGS += -DBOARD_$(BOARD)
+OFILES = $(CFILES:.c=.o)
+
+
+start.o: start.S
+	mipsel-linux-gnu-gcc $(GCCFLAGS) -I include -c start.S -o start.o
 
 
 %.o: %.c
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -c $< -o $@
+	mipsel-linux-gnu-gcc $(GCCFLAGS) -I include -c $< -o $@
 
-main.bin: src/start.o $(OFILES)
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -nostdlib -mxgot -G 0 -T link.lds src/start.o $(OFILES) -o main.elf
+main.bin: start.o $(OFILES)
+	mipsel-linux-gnu-gcc $(GCCFLAGS) -T link.lds start.o $(OFILES) -o main.elf
 	mipsel-linux-gnu-objcopy -O binary main.elf main.bin
-	mkbootimg --kernel main.bin \
+	~/nokia/mkbootimg/mkbootimg.py --kernel main.bin \
 	--base 0x10000000 \
 	--kernel_offset 0x00008000 \
 	--ramdisk_offset 0x01000000 \
@@ -36,4 +49,4 @@ main.bin: src/start.o $(OFILES)
 	--cmdline "" --output cowboot.img
 
 clean:
-	/bin/rm main.elf src/*.o *.bin cowboot.img > /dev/null 2> /dev/null || true
+	/bin/rm main.elf $(OFILES) start.o *.bin cowboot.img > /dev/null 2> /dev/null || true

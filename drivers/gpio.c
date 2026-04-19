@@ -1,8 +1,5 @@
-#include "inc/regs.h"
-#include "inc/fb.h"
-#include "inc/io.h"
-#include "inc/gpio.h"
-#include "inc/bootmenu.h"
+#include "common/io.h"
+#include "drivers/gpio.h"
 
 int gpio_get_value(u32 gpio)
 {

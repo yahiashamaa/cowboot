@@ -1,13 +1,13 @@
-#include "inc/types.h"
-#include "inc/timer.h"
-#include "inc/io.h"
-#include "inc/fb.h"
-#include "inc/lcdc.h"
-#include "inc/console.h"
-#include "inc/mmc.h"
-#include "inc/jz_bootimg.h"
-#include "inc/bootmenu.h"
-
+#include "common/types.h"
+#include "common/io.h"
+#include "common/fb.h"
+#include "drivers/timer.h"
+#include "drivers/lcdc.h"
+#include "drivers/mmc.h"
+#include "boot/jz_bootimg.h"
+#include "boot/boot.h"
+#include "boot/bootmenu.h"
+#include "config/config.h"
 
 void boot_jz_image(u8 *bootimg, const char *cmd)
 {
@@ -70,4 +70,9 @@ u8 *mmc_load_bootimg(u32 lba)
     mmc_read_data(lba, sectors, bootimg);
 
     return bootimg;
+}
+
+void reboot_recovery(void)
+{
+    _machine_restart(0, 1);
 }
