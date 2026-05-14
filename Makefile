@@ -45,7 +45,7 @@ main.bin: main.elf
 	$(OBJCOPY) -O binary $< $@
 
 cowboot.img: main.bin
-	mkbootimg --kernel main.bin \
+	python3 scripts/mkbootimg.py --kernel main.bin \
 	--base 0x10000000 \
 	--kernel_offset 0x00008000 \
 	--ramdisk_offset 0x01000000 \
