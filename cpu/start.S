@@ -1,4 +1,4 @@
-#include "common/regdef.h"
+#include "./include/asm/regdef.h"
 
 	.set noreorder
 

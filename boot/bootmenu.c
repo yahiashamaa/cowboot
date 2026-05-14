@@ -1,4 +1,4 @@
-#include "common/io.h"
+#include "io.h"
 #include "common/fb.h"
 #include "drivers/timer.h"
 #include "drivers/gpio.h"

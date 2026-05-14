@@ -1,4 +1,4 @@
-#include "common/io.h"
+#include "io.h"
 #include "drivers/gpio.h"
 
 int gpio_get_value(u32 gpio)

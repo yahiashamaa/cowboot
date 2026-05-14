@@ -1,4 +1,5 @@
-#include "common/io.h"
+#include "io.h"
+#include "lib/string.h"
 #include "drivers/lcdc.h"
 #include "config/config.h"
 

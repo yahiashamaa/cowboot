@@ -1,4 +1,4 @@
-#include "common/io.h"
+#include "io.h"
 #include "common/fb.h"
 #include "drivers/gpio.h"
 #include "drivers/timer.h"
@@ -8,16 +8,7 @@
 #include "boot/bootmenu.h"
 #include "config/config.h"
 
-#define NANOPRINTF_IMPLEMENTATION
-#define NANOPRINTF_USE_FIELD_WIDTH_FORMAT_SPECIFIERS	1
-#define NANOPRINTF_USE_PRECISION_FORMAT_SPECIFIERS	1
-#define NANOPRINTF_USE_FLOAT_FORMAT_SPECIFIERS		0
-#define NANOPRINTF_USE_SMALL_FORMAT_SPECIFIERS		1
-#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS		0
-#define NANOPRINTF_USE_BINARY_FORMAT_SPECIFIERS		1
-#define NANOPRINTF_USE_WRITEBACK_FORMAT_SPECIFIERS	1
-#define NANOPRINTF_USE_ALT_FORM_FLAG			    1
-#include "common/nanoprintf.h"
+#include "lib/nanoprintf.h"
 
 #include "boot/jz_bootimg.h"
 

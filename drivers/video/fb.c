@@ -1,7 +1,8 @@
-#include "common/io.h"
+#include "io.h"
+#include "lib/string.h"
 #include "drivers/timer.h"
 #include "drivers/lcdc.h"
-#include "common/font.h"
+#include "lib/font.h"
 #include "common/fb.h"
 #include "config/config.h"
 

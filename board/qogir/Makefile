@@ -1,0 +1,1 @@
+obj-y += $(patsubst %.c,%.o,$(wildcard board/$(BOARD)/*.c))

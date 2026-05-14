@@ -1,46 +1,51 @@
-GCCFLAGS = -Wall -O2 -ffreestanding -fpic -mabicalls -pie -mxgot -G0 -march=mips32r2
-
-all: clean main.bin
-
 BOARD ?= qogir
+CROSS_COMPILE ?= mipsel-linux-gnu-
+
+CC      := $(CROSS_COMPILE)gcc
+LD      := $(CROSS_COMPILE)gcc
+OBJCOPY := $(CROSS_COMPILE)objcopy
+
+CFLAGS = -Wall -O2 -ffreestanding -fpic -mabicalls -pie -mxgot -G0 -march=mips32r2
+CFLAGS += -Iinclude -Icpu/include
+
 
 ifeq ($(BOARD),)
 $(error No board specified)
 endif
 
 ifneq ($(APPEND),)
-$(info appended downstream boot)
+$(info Appended downstream boot)
 
 ifeq ($(wildcard downstream.img),)
-$(error downstream.img not found)
+$(error downstream.img not found!)
+endif
+CFLAGS += -DDOWNSTREAM_BOOT
 endif
 
-GCCFLAGS += -DDOWNSTREAM_BOOT
-
-else
-$(info no appended downstream boot)
-endif
-
-
-CFILES = \
-    $(wildcard common/*.c) \
-    $(wildcard drivers/*.c) \
-    $(wildcard board/$(BOARD)/*.c)
-GCCFLAGS += -DBOARD_$(BOARD)
+CFLAGS += -DBOARD_$(BOARD)
 OFILES = $(CFILES:.c=.o)
 
+SUBDIRS := cpu boot lib init drivers board/$(BOARD)
+include $(addsuffix /Makefile,$(SUBDIRS))
 
-start.o: start.S
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -I include -c start.S -o start.o
+OBJS := start.o $(obj-y)
 
+all: clean cowboot.img
+
+start.o: cpu/start.S
+	$(CC) $(CFLAGS) -I include -c $< -o $@
 
 %.o: %.c
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -I include -c $< -o $@
+	$(CC) $(CFLAGS) -I include -c $< -o $@
 
-main.bin: start.o $(OFILES)
-	mipsel-linux-gnu-gcc $(GCCFLAGS) -T link.lds start.o $(OFILES) -o main.elf
-	mipsel-linux-gnu-objcopy -O binary main.elf main.bin
-	~/nokia/mkbootimg/mkbootimg.py --kernel main.bin \
+main.elf: $(OBJS)
+	$(CC) $(CFLAGS) -T cpu/link.lds $^ -o $@
+
+main.bin: main.elf
+	$(OBJCOPY) -O binary $< $@
+
+cowboot.img: main.bin
+	mkbootimg --kernel main.bin \
 	--base 0x10000000 \
 	--kernel_offset 0x00008000 \
 	--ramdisk_offset 0x01000000 \
@@ -49,4 +54,5 @@ main.bin: start.o $(OFILES)
 	--cmdline "" --output cowboot.img
 
 clean:
-	/bin/rm main.elf $(OFILES) start.o *.bin cowboot.img > /dev/null 2> /dev/null || true
+	rm -f $(OBJS)
+	rm -f main.elf main.bin cowboot.img
