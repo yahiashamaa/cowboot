@@ -37,7 +37,7 @@ void continue_boot(void)
 static void boot_recovery(void)
 {
     u8 *bootimg = mmc_load_bootimg(RECOVERY_LBA);
-    boot_jz_image(bootimg, BOARD_CMDLINE);
+    boot_v2_bootimg((u32)bootimg);
 }
 
 static void machine_reset(void)
@@ -55,7 +55,7 @@ const bootmenu_entry board_boot_options[] = {
     { "Boot embedded image", embed_boot },
 #endif
     { "Continue boot",       continue_boot },
-    { "Boot from recovery",  boot_recovery },
+    { "Boot from recovery (v2)",  boot_recovery },
     { "Reset",               machine_reset },
     { "Reset to recovery",   reboot_recovery },
     { "Power Off",           machine_poweroff },
