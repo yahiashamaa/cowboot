@@ -55,6 +55,21 @@ void * memcpy(void *dest, const void *src, unsigned int count)
 	return dest;
 }
 
+void *memchr(const void *s, int c, size_t n)
+{
+	const unsigned char *p = (const unsigned char *)s;
+
+	while (n--) {
+		if (*p == (unsigned char)c) {
+			return (void *)p;
+		}
+
+		++p;
+	}
+
+	return NULL;
+}
+
 int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;
@@ -72,4 +87,79 @@ u32 strlen(const char * s) {
     for (sc = s; *sc != '\0'; ++sc)
         /* nothing hehe */;
     return sc - s;
+}
+
+char *strncpy(char *dest, const char *src, size_t count)
+{
+	char *tmp = dest;
+
+	while (count) {
+		if ((*tmp = *src) != 0)
+			src++;
+		tmp++;
+		count--;
+	}
+	return dest;
+}
+
+int strcmp(const char *cs, const char *ct)
+{
+    while (*cs == *ct) {
+        if (!*cs)
+            return 0;
+        cs++;
+        ct++;
+    }
+    return (unsigned char)*cs - (unsigned char)*ct;
+}
+
+int strncmp(const char *cs, const char *ct, unsigned int count)
+{
+    while (count) {
+        if (*cs != *ct)
+            return (unsigned char)*cs - (unsigned char)*ct;
+        if (!*cs)
+            break;
+        cs++;
+        ct++;
+        count--;
+    }
+    return 0;
+}
+
+char *strchr(const char *s, int c)
+{
+    do {
+        if (*s == (char)c)
+            return (char *)s;
+    } while (*s++);
+    return NULL;
+}
+
+char *strrchr(const char *s, int c)
+{
+    const char *last = NULL;
+    do {
+        if (*s == (char)c)
+            last = s;
+    } while (*s++);
+    return (char *)last;
+}
+
+void *memmove(void *dest, const void *src, unsigned int n)
+{
+    char *d = dest;
+    const char *s = src;
+    if (d == s)
+        return dest;
+    if (d < s) {
+        while (n--)
+            *d++ = *s++;
+    } else {
+        d += n;
+        s += n;
+        while (n--)
+            *--d = *--s;
+    }
+    return dest;
 }

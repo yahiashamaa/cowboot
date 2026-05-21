@@ -9,6 +9,7 @@
 #include "config/config.h"
 
 #include "lib/nanoprintf.h"
+#include "lib/string.h"
 
 #include "boot/jz_bootimg.h"
 

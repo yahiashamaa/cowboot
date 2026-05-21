@@ -8,6 +8,7 @@
 
 #include "libfdt_env.h"
 #include "fdt.h"
+#include "lib/string.h"
 
 #ifdef __cplusplus
 extern "C" {

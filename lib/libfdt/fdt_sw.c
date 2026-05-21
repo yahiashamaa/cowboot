@@ -7,6 +7,7 @@
 
 #include "lib/fdt.h"
 #include "lib/libfdt.h"
+#include "lib/string.h"
 
 #include "lib/libfdt_internal.h"
 
