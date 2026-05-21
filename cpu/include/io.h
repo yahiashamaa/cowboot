@@ -29,4 +29,9 @@ static inline u16 readw(u32 addr)
     return val;
 }
 
+#define virt_to_phys(addr) ((u32)(addr) & 0x1fffffff)
+
+#define __ALIGN_MASK(x, mask)	(((x) + (mask)) & ~(mask))
+#define ALIGN(x, a)		__ALIGN_MASK((x), (typeof(x))(a) - 1)
+
 #endif // IO_H_

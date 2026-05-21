@@ -9,8 +9,8 @@
 #define BOOT_ARGS_SIZE 512
 
 #define PARAM_BASE      0x80001000 /* The base address of parameters*/
-#define KERNEL_ADDR     0x80F00000 /* kernel entry address */
-#define RAMDISK_ADDR    0x81A00000 /* initrd address */
+#define JZ_KERNEL_ADDR     0x80F00000 /* kernel entry address */
+#define JZ_RAMDISK_ADDR    0x81A00000 /* initrd address */
 
 struct jz_boot_img_hdr {
     unsigned char magic[BOOT_MAGIC_SIZE];
