@@ -19,20 +19,23 @@ void boot_jz_image(u8 *bootimg, const char *cmd)
 {
     struct jz_boot_img_hdr *hdr = (struct jz_boot_img_hdr *)bootimg;
 
-    u32 page_size    = hdr->page_size;
-    u32 page_mask    = page_size - 1;
+    u32 page_sz    = hdr->page_size;
+    char final_cmdline[1024];
 
-    u32 kernel_actual  = (hdr->kernel_size  + page_mask) & ~page_mask;
+    u32 kernel_actual  = ALIGN(hdr->kernel_size, page_sz);
+    u32 ramdisk_start = JZ_KERNEL_ADDR  + ALIGN(hdr->kernel_size, 0x100000);
 
-    u8 *kernel_src  = bootimg + page_size;
-    u8 *ramdisk_src = bootimg + page_size + kernel_actual;
+    u8 *kernel_src  = bootimg + page_sz;
+    u8 *ramdisk_src = bootimg + page_sz + kernel_actual;
+
+    npf_snprintf(final_cmdline, sizeof(final_cmdline), "%s root=/dev/ram0 rd_start=0x%x rd_size=0x%x ", cmd, ramdisk_start, hdr->ramdisk_size);
 
     // Copy kernel
     memcpy((void *)JZ_KERNEL_ADDR, kernel_src, hdr->kernel_size);
 
     asm volatile("sync" ::: "memory");
     
-    memcpy((u8 *)JZ_RAMDISK_ADDR, ramdisk_src, hdr->ramdisk_size);
+    memcpy((u8 *)ramdisk_start, ramdisk_src, hdr->ramdisk_size);
     
     asm volatile("sync" ::: "memory");
 
@@ -43,14 +46,14 @@ void boot_jz_image(u8 *bootimg, const char *cmd)
     param[6] = JZ_KERNEL_ADDR;
     
     char *cmdline = (char *)(PARAM_BASE + 32);
-    for (u32 i = 0; i <= strlen(cmd); i++)
-        cmdline[i] = cmd[i];
+    for (u32 i = 0; i <= strlen(final_cmdline); i++)
+        cmdline[i] = final_cmdline[i];
 
 
     flush_cache_all();
     asm volatile("sync" ::: "memory");
 
-    ((void (*)(int, char **, char *))0x80F00000)(2,
+    ((void (*)(int, char **, char *))JZ_KERNEL_ADDR)(2,
         (char **)(PARAM_BASE + 16),
         (char *)PARAM_BASE);
 }
@@ -86,10 +89,8 @@ u8 *mmc_load_bootimg(u32 lba)
     }
     else
     {
-        u32 page_mask    = page_sz - 1;
-
-        u32 kernel_actual  = (hdr->kernel_size  + page_mask) & ~page_mask;
-        u32 ramdisk_actual = (hdr->ramdisk_size + page_mask) & ~page_mask;
+        u32 kernel_actual  = ALIGN(hdr->kernel_size, page_sz);
+        u32 ramdisk_actual = ALIGN(hdr->ramdisk_size, page_sz);
 
         u32 total = page_sz + kernel_actual + ramdisk_actual;
         sectors =  ALIGN(total, 512) / 512;
