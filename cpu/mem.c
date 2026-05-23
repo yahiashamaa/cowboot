@@ -2,7 +2,7 @@
 #include "mem.h"
 #include "common/types.h"
 
-static struct memregion heap;
+static struct memregion heap  __attribute__ ((section(".data")));
 
 void boot_alloc_init(u32 start, u32 end)
 {
