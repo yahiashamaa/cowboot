@@ -1,4 +1,6 @@
 #include "io.h"
+#include "mem.h"
+#include "cache.h"
 #include "lib/string.h"
 #include "drivers/lcdc.h"
 #include "config/config.h"
@@ -7,8 +9,10 @@ void early_lcdc_init(void)
 {
     // Thankfully, we run as kernel. so bootloader (U-Boot) has already done some heavy lifting
     
-    
-    struct framedesc *desc = (struct framedesc *)DESC_VIRT;
+    void *p = malloc(sizeof(struct framedesc) * 3);
+
+    struct framedesc *desc = (struct framedesc *)KSEG1ADDR(p);
+    u32 desc_phys = virt_to_phys(p);
 
     /* With this memset, we actually zero out desc[0], desc[1]
      * and desc[2], but desc[1] is never used, however, not 
@@ -17,8 +21,8 @@ void early_lcdc_init(void)
      */
     memset(desc, 0, sizeof(struct framedesc) * 3);
 
-    desc[0].next       = DESC_PHYS + LCDC_DA0;
-    desc[2].next       = DESC_PHYS;
+    desc[0].next       = desc_phys + LCDC_DA0;
+    desc[2].next       = desc_phys;
 
     desc[0].databuf    = FB_PHYS;
 
@@ -36,7 +40,7 @@ void early_lcdc_init(void)
 
     desc[2].cmd = LCDC_CMD_CMD | LCDC_CMD_FRM_EN;
 
-    writel(DESC_PHYS + LCDC_DA0, LCDC_BASE + LCDC_DA0);
+    writel(desc_phys + LCDC_DA0, LCDC_BASE + LCDC_DA0);
 
     /* Setup continuous DMA refresh by clearing the
      * SLCDC_CTRL_DMA_MODE bit and setting SLCDC_CTRL_DMA_EN

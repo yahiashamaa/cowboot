@@ -1,5 +1,6 @@
 #include "io.h"
 #include "cache.h"
+#include "mem.h"
 #include "common/types.h"
 #include "common/fb.h"
 #include "common/console.h"
@@ -60,14 +61,14 @@ void boot_jz_image(u8 *bootimg, const char *cmd)
 
 u8 *mmc_load_bootimg(u32 lba)
 {
-    u8 *bootimg = (u8 *)0x85000000;
+    u8 buf[8192]; 
     u32 sectors;
 
     /* should be a fallback for both header versions */
-    struct boot_img_hdr_v2 *hdr = (struct boot_img_hdr_v2 *)bootimg;
+    struct boot_img_hdr_v2 *hdr = (struct boot_img_hdr_v2 *)buf;
 
     // Read header only first hehe
-    mmc_read_data(lba, 8, bootimg); 
+    mmc_read_data(lba, 8, buf); 
     u32 page_sz    = hdr->page_size;
     
     if (memcmp(hdr->magic, BOOT_MAGIC, BOOT_MAGIC_SIZE))
@@ -97,6 +98,7 @@ u8 *mmc_load_bootimg(u32 lba)
     }
 
     // Read full image
+    u8 *bootimg = malloc(sectors * 512);
     mmc_read_data(lba, sectors, bootimg);
 
     return bootimg;
