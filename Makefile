@@ -6,6 +6,7 @@ LD      := $(CROSS_COMPILE)gcc
 OBJCOPY := $(CROSS_COMPILE)objcopy
 
 CFLAGS = -Wall -O2 -ffreestanding -fpic -mabicalls -pie -mxgot -G0 -march=mips32r2
+CFLAGS += -fno-builtin-malloc
 CFLAGS += -Iinclude -Icpu/include
 
 
