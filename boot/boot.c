@@ -40,13 +40,15 @@ void boot_jz_image(u8 *bootimg, const char *cmd)
     
     asm volatile("sync" ::: "memory");
 
-    u32 *param = (u32 *)PARAM_BASE;
-    memset(param, 0, 256);
+
+    u8 *param_base = (u8 *)(ramdisk_start  + ALIGN(hdr->kernel_size, 8));
+    memset(param_base, 0, 256);
     
-    param[5] = PARAM_BASE + 32;
+    u32 *param = (u32 *)param_base;
+    
+    param[5] = (u32)(param_base + 32);
     param[6] = JZ_KERNEL_ADDR;
-    
-    char *cmdline = (char *)(PARAM_BASE + 32);
+    char *cmdline = (char *)(param_base + 32);
     for (u32 i = 0; i <= strlen(final_cmdline); i++)
         cmdline[i] = final_cmdline[i];
 
@@ -55,8 +57,8 @@ void boot_jz_image(u8 *bootimg, const char *cmd)
     asm volatile("sync" ::: "memory");
 
     ((void (*)(int, char **, char *))JZ_KERNEL_ADDR)(2,
-        (char **)(PARAM_BASE + 16),
-        (char *)PARAM_BASE);
+        (char **)(param_base + 16),
+        (char *)param_base);
 }
 
 u8 *mmc_load_bootimg(u32 lba)

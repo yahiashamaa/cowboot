@@ -8,7 +8,6 @@
 #define BOOT_NAME_SIZE 16
 #define BOOT_ARGS_SIZE 512
 
-#define PARAM_BASE      0x80001000 /* The base address of parameters*/
 #define JZ_KERNEL_ADDR     0x80F00000 /* kernel entry address */
 
 struct jz_boot_img_hdr {
