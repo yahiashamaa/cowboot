@@ -34,4 +34,7 @@ static inline u16 readw(u32 addr)
 #define __ALIGN_MASK(x, mask)	(((x) + (mask)) & ~(mask))
 #define ALIGN(x, a)		__ALIGN_MASK((x), (typeof(x))(a) - 1)
 
+#define KSEG0ADDR(a)		(virt_to_phys(a) | KSEG0)
+#define KSEG1ADDR(a)		(virt_to_phys(a) | KSEG1)
+
 #endif // IO_H_
