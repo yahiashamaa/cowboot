@@ -16,7 +16,7 @@
 
 #define RELOCATE_ADDR 0x8F000000
 #define RELOC_SP        (RELOCATE_ADDR + 0xFFFF00)
-#define HEAP_SIZE 0x20000
+#define HEAP_SIZE 0x4000000
 
 static void init_bootmem(void)
 {
